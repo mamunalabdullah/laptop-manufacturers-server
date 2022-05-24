@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -16,13 +16,37 @@ async function run(){
         console.log("Database connect");
         const toolsCollection = client.db("laptop-manufacturers").collection("tools");
 
-        app.get("/tool", async(req, res) => {
+      // read all 
+        app.get("/tools", async(req, res) => {
             const query = {};
             const cursor = toolsCollection.find(query);
             const tools = await cursor.toArray();
             res.send(tools);
         })
-    }
+
+        // find one 
+        app.get('/tool/:id', async (req, res) => {
+          const id = req.params.id;
+          const filter = { _id: ObjectId(id) };
+          const tool = await toolsCollection.findOne(filter);
+          res.send(tool);
+      })
+
+        // Update one
+        app.put('/update/:id', async (req, res) => {
+          const id = req.params.id;
+          const data = req.body;
+          const filter = { _id: ObjectId(id) };
+          const options = { upsert: true };
+          const updateDoc = {
+              $set: {
+                  ...data,
+              },
+          };
+          const result = await toolsCollection.updateOne(filter, updateDoc, options);
+          res.send(result);
+      })
+      }
     finally{
         // await client.close();
     }
