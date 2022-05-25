@@ -19,6 +19,8 @@ async function run() {
       await client.connect();
       const toolsCollection = client.db("laptop-manufacturers").collection("tools")
       const reviewsCollection = client.db("laptop-manufacturers").collection("reviews")
+      const ordersCollection = client.db("laptop-manufacturers").collection("orders")
+
       // Read all data
       app.get('/tools', async (req, res) => {
           const query = req.query;
@@ -72,6 +74,24 @@ async function run() {
           const data = req.body;
 
           const result = await reviewsCollection.insertOne(data);
+          res.send(result);
+      })
+
+      // order part
+      // order all data
+      app.get('/order', async (req, res) => {
+          const query = req.query;
+          const cursor = ordersCollection.find(query);
+          const result = await cursor.toArray()
+          // console.log(result);
+          res.send(result);
+      })
+
+      //Create a order
+
+      app.post('/order', async (req, res) => {
+          const data = req.body;
+          const result = await ordersCollection.insertOne(data);
           res.send(result);
       })
 
