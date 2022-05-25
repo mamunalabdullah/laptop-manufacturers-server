@@ -96,6 +96,11 @@ async function run() {
           res.send(result);
       })
 
+      app.get("/user", async(req, res) => {
+        const users = await usersCollection.find().toArray();
+        res.send(users);
+      })
+
       //update a user
       app.put("/user/:email", async(req, res) => {
         const email = req.params.email;
