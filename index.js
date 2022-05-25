@@ -17,9 +17,10 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
       await client.connect();
-      const toolsCollection = client.db("laptop-manufacturers").collection("tools")
-      const reviewsCollection = client.db("laptop-manufacturers").collection("reviews")
-      const ordersCollection = client.db("laptop-manufacturers").collection("orders")
+      const toolsCollection = client.db("laptop-manufacturers").collection("tools");
+      const reviewsCollection = client.db("laptop-manufacturers").collection("reviews");
+      const ordersCollection = client.db("laptop-manufacturers").collection("orders");
+      const usersCollection = client.db("laptop-manufacturers").collection("users");
 
       // Read all data
       app.get('/tools', async (req, res) => {
@@ -95,6 +96,18 @@ async function run() {
           res.send(result);
       })
 
+      //update a user
+      app.put("/user/:email", async(req, res) => {
+        const email = req.params.email;
+        const user = req.body;
+        const filter = {email: email};
+        const options = {upsert: true};
+        const updateDoc = {
+          $set: user, 
+        };
+        const result = await usersCollection.updateOne(filter, updateDoc, options);
+        res.send(result);
+      })
 
   } finally {
 
